@@ -1,0 +1,11 @@
+# http://docs.ansible.com/ansible/latest/apt_module.html
+- name: install all required debs
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+    cache_valid_time: 3600
+  with_items: "{{ debs }}"
+  when: ansible_os_family == "Debian"
+
+

@@ -1,0 +1,13 @@
+[ssh-copy-id]
+debian-www ansible_ssh_host=192.168.23.125 ansible_ssh_user=cuc  ansible_ssh_port=22 ansible_become_pass="{{ become_pass }}"
+ubuntu-www ansible_ssh_host=192.168.23.126 ansible_ssh_user=cuc  ansible_ssh_port=22 ansible_become_pass="{{ become_pass }}"
+centos-www ansible_ssh_host=192.168.23.128 ansible_ssh_user=root ansible_ssh_port=22
+
+[debian]
+debian-www
+
+[ubuntu]
+ubuntu-www
+
+[centos]
+centos-www

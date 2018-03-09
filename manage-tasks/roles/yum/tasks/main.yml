@@ -1,0 +1,10 @@
+# http://docs.ansible.com/ansible/latest/yum_module.html
+- name: install all required rpms
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ yums }}" # loop 的一种常见写法：遍历数组
+  when: # 条件判断，当“同时”满足以下所列条件时才会执行上述模块 yum 中定义的操作
+   - ansible_distribution == "CentOS"
+   - ansible_distribution_major_version == "7"
+

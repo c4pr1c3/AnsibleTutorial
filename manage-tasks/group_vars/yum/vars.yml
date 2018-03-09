@@ -1,0 +1,4 @@
+yums:
+  - httpd
+  - php-pdo
+  - mariadb

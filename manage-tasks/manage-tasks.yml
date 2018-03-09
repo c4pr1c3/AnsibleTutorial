@@ -1,0 +1,7 @@
+---
+- hosts: manage-tasks
+  gather_facts: yes # 本例子中会用到远程服务器上的运行时信息
+  roles: # 官方推荐的 ansible 最佳实践组织任务方式（按角色）
+    - common
+    - apt 
+    - yum

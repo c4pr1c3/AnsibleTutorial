@@ -1,0 +1,9 @@
+# http://docs.ansible.com/ansible/latest/package_module.html
+- name: install all required pkgs
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ pkgs }}"
+- name: debug remote sysinfo
+  debug:
+    msg: "{{ ansible_distribution }} {{ ansible_distribution_major_version }} {{ ansible_os_family }}" # 这里的3个变量来自 gather_facts 阶段采集到远程主机信息

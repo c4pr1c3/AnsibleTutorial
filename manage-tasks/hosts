@@ -1,0 +1,11 @@
+[manage-tasks]
+debian-www ansible_ssh_host=192.168.23.125 ansible_ssh_user=root ansible_ssh_port=22
+ubuntu-www ansible_ssh_host=192.168.23.126 ansible_ssh_user=root ansible_ssh_port=22
+centos-www ansible_ssh_host=192.168.23.128 ansible_ssh_user=root ansible_ssh_port=22
+
+[apt]
+debian-www
+ubuntu-www
+
+[yum]
+centos-www

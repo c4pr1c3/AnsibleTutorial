@@ -1,0 +1,12 @@
+---
+- hosts: ssh-copy-id # 对应 hosts 文件中定义的 主机组 名
+  gather_facts: no # 如果不需要用到远程主机上的环境变量、运行时参数等，则可以跳过 gather_facts 阶段
+  tasks: # 最简单的定义配置任务的写法
+  - name: deploy local rsa pub to remote host # 一句话描述任务
+    authorized_key: # 任务使用到的 Ansible Module 名称，以下用缩进表示使用一系列参数传递给当前模块
+      user: root
+      state: present
+      key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
+    become: true # 以上模块使用时执行 提升权限 操作
+    become_user: root # 使用 root 用户身份执行该模块
+    become_method: su # 提升权限使用到的方法。由于部分操作系统默认没有安装 sudo ，只有 su，例如Debian 9最小化安装方式。所以此处用的是 su

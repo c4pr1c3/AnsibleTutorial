@@ -1,0 +1,8 @@
+demo_group_name: "demo"
+demo_users: # 定义了一个字典，和数组相比，子元素前没有使用 - 
+  alice:
+    group: "vault_group"
+    passwd: "{{ vault_demo_users.alice.passwd }}"
+  bob:
+    group: "vault_group"
+    passwd: "{{ vault_demo_users.bob.passwd }}"

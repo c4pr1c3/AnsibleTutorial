@@ -1,0 +1,5 @@
+debs:
+  - apache2
+  - php-mysql
+  - php-mcrypt
+  - mysql-server
