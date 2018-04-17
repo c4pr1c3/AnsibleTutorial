@@ -7,7 +7,7 @@
       name: "{{ demo_group_name }}" # 引用 变量名 ，可能会在多个文件中先后定义，后加载执行到的会覆盖掉先前加载执行到的变量赋值，注意查看 Ansible 官网文档中对变量赋值优先级的总结
       state: present
   - name: manage users using plaintext passwords
-    user: name="{{ item.name }}" password="{{ item.passwd }}" group="{{ item.group }}" state=present shell="/bin/bash"
+    user: name="{{ item.name }}" password="{{ item.passwd | password_hash('sha512') }}" group="{{ item.group }}" state=present shell="/bin/bash"
     with_items: # 以下定义的是一个 数组
       - { name: 'demo1', passwd: 'plz-change-me', group: '{{ demo_group_name }}' } # 直接用 明文 定义变量（passwd）是一种“不安全”的做法，此处是一个“反例”
       - { name: 'demo2', passwd: 'plz-change-me', group: '{{ demo_group_name }}' }
