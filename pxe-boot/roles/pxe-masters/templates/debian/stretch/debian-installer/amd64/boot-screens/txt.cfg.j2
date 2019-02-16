@@ -1,0 +1,4 @@
+label install
+	menu label ^Install
+	kernel debian-installer/amd64/linux 
+	append vga=788 netcfg/hostname={{ txt.cfg.netcfg.hostname }} netcfg/get_hostname={{ txt.cfg.netcfg.get_hostname }} netcfg/get_domain={{ txt.cfg.netcfg.get_domain }} initrd=debian-installer/amd64/initrd.gz auto=true url=http://{{ svr_ip }}/debian/stretch.preseed.cfg

@@ -1,0 +1,37 @@
+debs: 
+  - apache2 
+  - dnsmasq
+svr_ip: "172.16.0.1"
+dhcp:
+  interface: "enp0s8"
+  range: "172.16.0.50,172.16.0.250,12h"
+  option: "option:router,{{ svr_ip }}"
+  pxe:
+      - { arch: "x86PC", text: "Install Debian Stretch", path: "debian/stretch/pxelinux" }
+      - { arch: "x86PC", text: "Install Ubuntu Bionic", path: "ubuntu/bionic/pxelinux" }
+      - { arch: "x86PC", text: "Install Ubuntu Xenial HWE", path: "ubuntu/xenial-hwe/pxelinux" }
+tftp:
+  root: "/tftpboot"
+  subdirs:
+    - "debian/stretch"
+    - "ubuntu/bionic"
+    - "ubuntu/xenial-hwe"
+netboot:
+  image:
+    - { url: "http://ftp.debian.org/debian/dists/stretch/main/installer-amd64/20170615+deb9u5+b2/images/netboot/netboot.tar.gz", download_dest: "{{ tftp.root }}/netboot-stretch.tar.gz", checksum: "sha256:4dca5538cc729efb1f0049bd095b1d9ac51808ad7751c57d31c7870a620417a8", unarchive_dest: "{{ tftp.root }}/debian/stretch" }
+    - { url: "http://archive.ubuntu.com/ubuntu/dists/bionic-updates/main/installer-amd64/20101020ubuntu543.7/images/netboot/netboot.tar.gz", download_dest: "{{ tftp.root }}/netboot-bionic.tar.gz", checksum: "sha256:dba102f76c3a2f334346a43970e28bbdb6eb18f59c6279ec615b68e1a4023657", unarchive_dest: "{{ tftp.root }}/ubuntu/bionic" }
+    - { url: "http://archive.ubuntu.com/ubuntu/dists/xenial-updates/main/installer-amd64/20101020ubuntu451.27/images/hwe-netboot/netboot.tar.gz", download_dest: "{{ tftp.root }}/netboot-xenial-hwe.tar.gz", checksum: "sha256:554ffc80367e9c87b7cb31d4472117d3ac533626e2f351dc9bd009744b03416e", unarchive_dest: "{{ tftp.root }}/ubuntu/xenial-hwe" }
+txt:
+  cfg:
+    netcfg:
+      get_hostname: "pxe-dev"
+      get_domain: "pxe.cuc.example"
+      hostname: "pxe-dev"
+    files:
+      - { src: "ubuntu/xenial-hwe/ubuntu-installer/amd64/boot-screens/txt.cfg.j2", dest: "{{ tftp.root }}/ubuntu/xenial-hwe/ubuntu-installer/amd64/boot-screens/txt.cfg" }
+      - { src: "ubuntu/bionic/ubuntu-installer/amd64/boot-screens/txt.cfg.j2", dest: "{{ tftp.root }}/ubuntu/bionic/ubuntu-installer/amd64/boot-screens/txt.cfg" }
+      - { src: "debian/stretch/debian-installer/amd64/boot-screens/txt.cfg.j2", dest: "{{ tftp.root }}/debian/stretch/debian-installer/amd64/boot-screens/txt.cfg" }
+masquerade_out_interface: '{{ dhcp.interface }}'
+masquerade_source: '172.16.0.0/24'
+masquerade_destination: '! 172.16.0.0/24'
+masquerade_protocol: 'all'

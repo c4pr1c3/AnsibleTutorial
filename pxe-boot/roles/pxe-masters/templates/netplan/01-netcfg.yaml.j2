@@ -1,0 +1,13 @@
+# This file describes the network interfaces available on your system
+# For more information, see netplan(5).
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    enp0s3:
+      dhcp4: yes
+    {{ dhcp.interface }}:
+      addresses:
+        - {{ svr_ip }}/24
+    enp0s9:
+      dhcp4: yes

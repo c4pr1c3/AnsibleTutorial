@@ -1,0 +1,88 @@
+# http://docs.ansible.com/ansible/latest/apt_module.html
+- shell: dpkg -s 'netplan.io'
+  ignore_errors: True
+  register: is_netplan
+- name: template /etc/netplan/01-netcfg.yaml
+  template:
+    src: templates/netplan/01-netcfg.yaml.j2
+    dest: /etc/netplan/01-netcfg.yaml
+    owner: root
+    group: root
+    mode: 0644
+  notify: netplan apply config
+  when: is_netplan.stderr.find('is not installed') == -1
+- name: template /etc/network/interfaces
+  template:
+    src: templates/network/interfaces.j2
+    dest: /etc/network/interfaces
+    owner: root
+    group: root
+    mode: 0644
+  notify: ifup pxe interface
+  when: is_netplan.stderr.find('is not installed') != -1
+- name: install all required debs
+  apt:
+    name: "{{ debs }}"
+    state: present
+    update_cache: yes
+    cache_valid_time: 3600
+  when: ansible_os_family == "Debian"
+- name: mkdir for TFTP root
+  file:
+    path: "{{ tftp.root }}/{{ item }}"
+    state: directory
+    mode: 0755
+    group: root
+    owner: root
+  with_items: 
+    - "{{ tftp.subdirs }}"
+- name: Download file with check (sha256)
+  get_url:
+    url: "{{ item.url }}"
+    dest: "{{ item.download_dest }}"
+    checksum: "{{ item.checksum }}"
+  with_items: "{{ netboot.image }}"
+- name: Extract netboot.tar.gz into TFTP root
+  unarchive:
+    src: "{{ item.download_dest }}"
+    dest: "{{ item.unarchive_dest }}"
+    remote_src: yes
+    creates:
+  with_items: "{{ netboot.image }}"
+- name: template /etc/dnsmasq/dnsmasq.conf
+  template:
+    src: templates/dnsmasq.conf.j2
+    dest: /etc/dnsmasq.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - restart dnsmasq
+- name: template PXE boot txt.cfg
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    mode: 0644
+  with_items: "{{ txt.cfg.files }}"
+- name: Synchronization of src on the control machine to dest on the remote hosts
+  synchronize:
+    src: files/
+    dest: /var/www/html/
+    owner: no
+- name: Create Iptables NAT chain
+  iptables:
+    table: nat
+    chain: POSTROUTING
+    source: '{{ masquerade_source }}'
+    destination: '{{ masquerade_destination }}'
+    jump: MASQUERADE
+    protocol: '{{ masquerade_protocol }}'
+    comment: Ansible NAT Masquerade
+- name: Enable IPv4 forwarding
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: 1
+    state: present
+    reload: True

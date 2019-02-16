@@ -1,0 +1,10 @@
+default install
+label install
+	menu label ^Install
+	menu default
+	kernel ubuntu-installer/amd64/linux 
+	append vga=788 netcfg/get_hostname={{ txt.cfg.netcfg.get_hostname }} netcfg/get_domain={{ txt.cfg.netcfg.get_domain }} initrd=ubuntu-installer/amd64/initrd.gz auto=true url=http://{{ svr_ip }}/ubuntu/bionic.preseed.cfg priority=critical
+label cli
+	menu label ^Command-line install
+	kernel ubuntu-installer/amd64/linux
+	append tasks=standard pkgsel/language-pack-patterns= pkgsel/install-language-support=false vga=788 initrd=ubuntu-installer/amd64/initrd.gz --- quiet 

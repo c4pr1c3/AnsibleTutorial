@@ -1,0 +1,11 @@
+- name: restart dnsmasq
+  service:
+    name: dnsmasq
+    state: restarted
+    enabled: yes
+- name: Applying Netplan Configuration
+  command: netplan apply
+  listen: netplan apply config
+- name: Ifup PXE interface
+  command: ifdown --ignore-errors {{ dhcp.interface }} && ifup --ignore-errors {{ dhcp.interface }}
+  listen: ifup pxe interface
