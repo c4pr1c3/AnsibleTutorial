@@ -10,6 +10,8 @@
   - name: manage users using encrypted passwords from external files
     user:
       name: "{{ item.key }}"
-      password: "{{ item.value.passwd | password_hash('sha512') }}" # 此处对需要保密的变量赋值引用自使用 Ansible Vault 加密的变量，可以安全的持久化存储并提交到版本控制器，但需要使用强健的Ansible Vault Passphrase并不要持久化明文保存该加密口令
+      # 此处对需要保密的变量赋值引用自使用 Ansible Vault 加密的变量，可以安全的持久化存储并提交到版本控制器
+      # 但需要使用强健的Ansible Vault Passphrase并不要持久化明文保存该加密口令
+      password: "{{ item.value.passwd | password_hash('sha512') }}"
       group: "{{ item.value.group }}"
     with_dict: "{{ demo_users }}"

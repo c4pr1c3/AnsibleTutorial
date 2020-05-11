@@ -1,6 +1,8 @@
 # http://docs.ansible.com/ansible/latest/apt_module.html
-- shell: dpkg -s 'netplan.io'
-  ignore_errors: True
+- name: check if it is_netplan enabled system
+  file:
+    path: "/usr/sbin/netplan"
+    state: file
   register: is_netplan
 - name: template /etc/netplan/01-netcfg.yaml
   template:
@@ -34,7 +36,7 @@
     mode: 0755
     group: root
     owner: root
-  with_items: 
+  with_items:
     - "{{ tftp.subdirs }}"
 - name: Download file with check (sha256)
   get_url:
